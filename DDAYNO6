@@ -40,4 +40,8 @@ def note_edit(request, note_id):
       return redirect('note_detail', note_id=note.id)
   else:
     form = Noteform(instance=note)
-  return render(request, 'notes/form.html', {'form':form, 'title':'Редактироват'})
+  return render(request, 'notes/form.html', {'form':form, 'title':'Редактировать заметку'})
+
+instance = note - форма будет заполняться текущими данными
+
+4. Шаблон form.html
