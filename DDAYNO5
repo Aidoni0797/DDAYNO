@@ -55,4 +55,42 @@ TEMPLATES = [
 {% endblock %}
 
 {% for %} - цикл по всем заметкам
-{% if %}
+{% if %} - условие: если заметки есть
+{{ note.title }} - вывод значения
+
+4. Шаблон detail.html (страница одной заметки)
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">{{ note.title }}</h3>
+            <p class="card-text">{{ note.body }}</p>
+            <small class="text-muted">Создано: {{ note.created_at|date:"d.m.Y H:i" }}</small>
+        </div>
+    </div>
+    <br>
+    <a href="{% url 'notes_list' %}">← Назад к списку</a>
+{% endblock %}
+
+{{note.created_at | date: "d.m.Y H:i"}} - фильтр форматирования даты
+
+5. Обновим views.py для использования шаблонов
+from django.shortcuts import render, get_object_or_404
+from .models import Note
+
+def notes_list(request):
+    notes = Note.objects.all()
+    return render(request, 'notes/index.html', {'notes': notes})
+
+def note_detail(request, note_id):
+    note = get_object_or_404(Note, pk=note_id)
+    return render(request, 'notes/detail.html', {'note': note})
+
+render() - возвращаем HTML-шаблон с данными
+Третий аргумент - словарь с переменными для шаблона
+
+6. Запуск проекта
+Теперь запустите проект с помощью команды:
+python manage.py runserver
+После чего попробуйте перейти по адресу http://127.0.0.1:8000/notes/, и вы должны увидеть список своих заметов!
