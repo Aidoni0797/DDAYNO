@@ -6,4 +6,32 @@ Views and URLs: обработка запросов в Django
 View (представление) - это функция или класс в Django, которая принимает HTTP-запрос и возвращает HTTP-ответ. Это мозг обработки запросов.
 Функция получает объект запроса (request) и возвращает объект HttpResponse.
 Простой пример:
-from dkango
+from django.http import HttpResponse
+
+def hello(request):
+  return HttpResponse("Привед от Django!")
+
+2. Создание представлений для приложения заметок
+Откройте файл notes/views.py два представления:
+from django.http import HttpResponse
+from .models import Note
+from django.shortcuts import get_object_or_404
+
+#Список всех заметок
+def notes_list(request):
+notes = Note.objects.all()
+html="<h1>Список заметок</h1>"
+for note in notes:
+html += f"<p><a href='/notes/{note.id}'>{note.title}</a></p>"
+return HttpResponse(html)
+
+def note_detail(request, note_id):
+note = get_object_or_404(Note, pk=note_id)
+return HttpResponse(f"<h1>{note.title}</h1><p>{note.body}</p>")
+
+Note.objects.all() - получаем все заметки
+get_object_or_404 - получаем заметку по ID или возвращаем 404
+HttpResponse - возвращаем обычный HTML как текст
+
+3. Связь представлений с URL-адресами
+Создайте файл notes/urls.py (если ещё)
