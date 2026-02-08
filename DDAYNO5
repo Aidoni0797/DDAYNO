@@ -1,0 +1,18 @@
+DDAYNO5
+
+Шаблоны: вывод HTML с данными
+Цель
+Научиться выводить данные из базы на страницу с помощью Django Templates
+1. Подключение шаблонов в settings.py
+По умолчанию Django уже настроен на работу с шаблонами, но важно убедиться, что в файле  settings.py подключена директория 
+'DIRS': [BASE_DIR/'templates']
+
+TEMPLATES = [
+{
+'BACKEND': 'django.template.backends.django.DjangoTemplates',
+'DIRS': [BASE_DIR/'templates'],
+'APP_DIRS':True,
+...
+},
+]
+Создайте папку templates в корне проекта и добавьте туда файлы
