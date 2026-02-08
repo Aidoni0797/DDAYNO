@@ -74,4 +74,8 @@ path('<int:note_id>/edit/', views.note_edit, name='note_edit'),
 В конце index.html добавим кнопку создание
 <a href="{% url 'note_create' %}" class="btn btn-success mb-3">Добавить заметку</a>
 
-В конце блока заметки в detail.html - кнопку
+В конце блока заметки в detail.html - кнопку редактирования:
+<a href="{% url 'note_edit' note.id %}" class="btn btn-warning">Редактировать</a>
+
+7. Валидация формы
+Django
