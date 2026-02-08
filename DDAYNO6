@@ -45,3 +45,5 @@ def note_edit(request, note_id):
 instance = note - форма будет заполняться текущими данными
 
 4. Шаблон form.html
+Создайте файл templates/notes/form.html
+{% extends 'base.html' %}
