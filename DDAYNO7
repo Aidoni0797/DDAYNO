@@ -19,4 +19,8 @@ return redirect('notes_list')
 return render(request, 'notes/confirm_delete.html', {'note':note})
 GET - показываем страницу подтверждения
 POST - удаляем и делаем редирект
-require_http_methods - защита: разрещён только 
+require_http_methods - защита: разрещён только GET и POST
+
+3. Шаблон confirm_delete.html
+
+Создайте файл templates/notes/con
