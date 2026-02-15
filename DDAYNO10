@@ -198,5 +198,10 @@ class Article(models.Model):
 
 delete() - переопределение удаления
 
-Аналогично save(), метод  delete() можно переопределить, если вы хотите
+Аналогично save(), метод  delete() можно переопределить, если вы хотите, чтобы при удалении объекта выполнялись дополнительные действия - 
+например, логирование, уадление файлов и т.д.
+
+class File(models.Model):
+  name = models.CharField(max_length=100)
+  file=models.FileField(upload_to='uploads/')
 
