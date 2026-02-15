@@ -165,4 +165,15 @@ class Event(models.Model):
   end_date = models.DateField()
 
   def clean(self):
+    #Проверка: дата окончания не раньше даты начала
+    if self.end_date<self.start_date:
+      raise ValidationError('Дата окончания не может быть раньше даты начала.')
+
+clean() - вызывается вручную, но автоматически запускается внутри full_clean() и в админке при сохранении объектов.
+
+full_clean() - проверка всех полей модели
+
+Метод full_clean():
+- запускается валидацию всех полей модели
+- вызывает метод clean() (если он есть)
     
