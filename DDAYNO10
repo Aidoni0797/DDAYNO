@@ -191,4 +191,12 @@ class Article(models.Model):
 
   def save(self, *args, **kwrags):
     if not self.slug:
-      self.slug:
+      self.slug = slugify(self.title)
+    super().save(*args, **kwargs)
+
+Важно: не забывайте вызывать super().save() - иначе объект не сохранится.
+
+delete() - переопределение удаления
+
+Аналогично save(), метод  delete() можно переопределить, если вы хотите
+
