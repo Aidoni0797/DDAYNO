@@ -46,3 +46,38 @@ class Meta:
 через параметр constraints внутри Meta:
 
 from djnago.db import models
+
+class Person(models.Model):
+  first_name = models.CharField(max_length=30)
+  last_name = models.CharField(max_length=30)
+
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(
+        fields=['first_name', 'last_name'],
+        name - 'unique_full_name'
+      )
+    ]
+
+Теперь при попытке добавить двух людей с одинаковым first_name и last_name, Django выбросит ошибку валидации.
+Важно: раньше для этого использовался unique_together, но начиная с Dkango 4.2 он устарел и больше не рекомендуетсся. Используйте UniqueConstraint
+
+indexes - добавление индексов
+
+Чтобы ускорить выборку по определенным полям, можно создать индекс.
+
+class Meta:
+  permissions = [
+    ('can_moderate', 'Может модерировать записи'),
+  ]
+
+abstract = true - абстрактные модели
+
+Абстрактная модель не создаёт свою таблицу в базе, но может быть унаследована другими моделями.
+
+class Meta:
+  abstract = True
+
+Полезно, есть есть повторяющиеся поля (например, created_at, updated_at) - можно вынести их в базовую абстрактную модель
+
+proxy=True
