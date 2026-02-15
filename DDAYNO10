@@ -176,4 +176,19 @@ full_clean() - проверка всех полей модели
 Метод full_clean():
 - запускается валидацию всех полей модели
 - вызывает метод clean() (если он есть)
-    
+- поднимает исключение ValidationError, если что-то не так
+Обычно используется, если вы хотите явно вызвать валидацию перед сохранением объекта:
+person = Person(first_name='', last_name='Smith')
+person.full_clean() #выбросит ValidationError, если first_name пустой
+
+save() - переопределение сохранения
+
+Метод save() вызывается при сохранении объекта в базу данных. Часто его переопределяют, чтобы изменить повердение перед/после сохранения:
+
+class Article(models.Model):
+  title = models.charField(max_length=200)
+  slug = models.SlugField(unique=True, blank = True)
+
+  def save(self, *args, **kwrags):
+    if not self.slug:
+      self.slug:
