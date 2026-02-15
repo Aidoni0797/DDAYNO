@@ -1,1 +1,33 @@
 DDAYNO11
+Организация связей между таблицами - OneToOne
+Введение
+В большинстве проектов таблицы в базе данных связаны между собой. Django поддерживает три типа отношений:
+- Один-ко-многим (ForeignKey)
+- Многие-ко-многим (ManyToManyField)
+- Один к одному (OneToOneField)
+
+В этой лекции мы подробно разберем связь один-к-одному, где каждой записи из одной таблицы соответствует тоько одна запись из другой.
+
+Когда использовать связь Один-к-одному
+
+Связь один-к-одному полезна, когда:
+- Нужно рзделить логически связанные данные по разным таблицам
+- У двух моделей должно быть строго по одной записи друг на друга
+- Есть необходимость в расширении встроенной модели (User, например).
+
+Пример:
+Модель User содержит базовую информацию, а Account - только данные входа.
+
+Создание связи через OneToOneField
+
+from django.db import models
+
+class User(models.Model):
+  name = models.CharField(max_length=20)
+
+class Account(models.Model):
+  login = models.CharField(max_length=20)
+  password = models.CharField(max_length=20)
+  user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+Что здесь происходит:
