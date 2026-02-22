@@ -90,3 +90,13 @@ class Product(models.Model):
 
 Теперь доступ будет через company.products.all(), вместо company.product_set.all(0.
 Фильтрация с двйоным подчёркиванием (__)
+
+#Получиь все продукты компании с именем Nestle
+Product.objects.filter(company__name='Nestle')
+
+#Получить ID компании для конкретного продукта
+Product.objects.get(name='Chocolate').company.id
+
+Управление связями: add(), clear(), remove()
+
+Для работы с методами add, clear
