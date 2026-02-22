@@ -1,0 +1,57 @@
+DDAYNO12
+
+Организация связей между таблицами - OneToOne
+
+Введение
+
+В большинстве проектов таблицы в базе данных связаны между собой. Django поддерживает три типа отношений:
+- Один-ко-многим (ForeignKey)
+- Многие-ко-многим (ManyToManyField)
+- Один-к-одному (OneToOneField)
+
+В этой лекции мы подробно разберем связь один-к-одному, где каждой записи из одной таблицы соответствует только одна запись
+из другой.
+Когда использовать связь "Один-к-одному"
+
+Связь "один-к-одному" полезна, когда:
+- Нужно разделить логически связанные данные по разным таблицам.
+- У двух моделей должно быть строго по одной записи друг на друга.
+- Есть необходимость в расширении встроенной модели (User, например)
+
+Пример:
+Модель User содержит базовую информацию, а Account - только данные входа
+
+Создание связи через OneToOneField
+
+from django.db import models
+
+class User(models.Model):
+  name = models.CharField(max+length=20)
+
+class Account(models.Model):
+  login = models.CharField(max_length=20)
+  password = models.CharField(max+length=20)
+  user = models.OneToOneField(User, on__delete=models.CASCADE, primary_key=True)
+
+Что здесь происходит:
+
+Аргумент - Описание
+User - Ссылаемся на связанную модель
+on_delete=models.CASCADE - Удаление User удалит и Account
+primary_key = True - Используем внешний ключ как основной
+
+Пример использования
+
+Создаём приложение и добавляем модели:
+python manage.py startapp onetoone
+
+В models.py добавляем вышеуказанный код, затем:
+python manage.py makemigrations
+python manage.py migrate
+
+Как работает ob_delete
+
+Параметр on_delete обязателен в OneToOneField и ForaignKey
+Тип - Что делает - Когда использовать
+CASCADE - Удаляет связанные объекты - Привязанные объекты теряют смысл без родителя
+PROTECT
