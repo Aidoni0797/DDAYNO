@@ -99,4 +99,9 @@ Product.objects.get(name='Chocolate').company.id
 
 Управление связями: add(), clear(), remove()
 
-Для работы с методами add, clear
+Для работы с методами add, clear, remove поле ForeignKey должно быть null=True.
+
+class Product(models.Model):
+  company=models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+
+Добавление товара к компании
