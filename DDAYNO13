@@ -64,4 +64,20 @@ Product.objects.create(company=nestle, name='Dragees', price=200)
 
 Из Product в Company
 
-product = P
+product = Product.objects.get(name='Chocolate')
+
+product.company.name
+# 'Nestle'
+
+Из Company в Product (через product_set)
+
+nestle = Company.objects.get(name='Nestle')
+
+#Все продукты этой компании
+products = nestle.product_set.all()
+
+#Количество продуктов
+count = nestle.product_set.count()
+
+#Продукты, название которых начинается на "Choc"
+choco_products = nestle.product
