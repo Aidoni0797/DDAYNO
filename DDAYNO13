@@ -123,5 +123,4 @@ apple.product_set.remomve(ipad)
 
 В обоих случаях поле company в модели должно быть null=True, иначе будет ошибка.
 
-Примечание:
-Поле ForeignKey всегда
+
