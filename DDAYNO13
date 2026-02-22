@@ -41,3 +41,21 @@ python manage.py makemigrations
 python manage.py migrate
 
 Структура таблиц в базе данных
+
+Создаются две таблицы:
+onetomany_company
+onetomany_product(с полем company_id - внешний ключ на Company)
+Работа в Dkango shell
+
+python manage.py shell
+
+from onetomany.models import *
+
+Создание объектов
+
+#Создание компании
+nestle = Company.objects.create(name='Nestle')
+
+#Продукты этой компании
+Product.objects.create(company=nestle, name='Chocolate', price=100)
+Product.objects.create
