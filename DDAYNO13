@@ -3,4 +3,41 @@ DDAYNO13
 Организация связей между таблицами - Один-Ко-Многим
 
 Введение
-Связь "один-ко-многим" (или "многие-к-одному")
+Связь "один-ко-многим" (или "многие-к-одному") означает, что:
+- Один объект главной модели может быть связан с многими объектами зависимой модели
+- А каждый объект зависимой модели - только с одним объектом главной
+
+Примеры таких связей:
+- Компания - Товары
+- Автомобиль - Запчасти
+- Гостиница - Комнаты
+- Книга - Авторы
+- Город - Улицы
+- Улица - Дома
+
+Пример: Компания и её товары
+1. Создаём приложение
+python manage.py startapp onetomany
+
+2. Модели
+from django.db import models
+
+class Company(models.Model):
+  name = moels.CharField(max_length=30)
+
+class Product(models.Model):
+  company = models.oreignKey(Company, on_delete=models.CASCADE)
+  name = models.CharField(max_length=30)
+  price = models.IntegerField()
+
+3. Что делает ForaignKey
+
+Аргумент - Описание
+Company - Модель с которой создаётся связь
+on_delete = models.CASCADE - при удалении компании удаляется и её продукты
+
+Миграции
+python manage.py makemigrations
+python manage.py migrate
+
+Структура таблиц в базе данных
