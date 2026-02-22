@@ -85,3 +85,8 @@ choco_products = nestle.product_set.filter(name__startswith="Choc")
 product_set - это имя по умолчани. Его можно переопределить с помощью related_name
 
 Пример с related_name
+class Product(models.Model):
+  company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='products')
+
+Теперь доступ будет через company.products.all(), вместо company.product_set.all(0.
+Фильтрация с двйоным подчёркиванием (__)
