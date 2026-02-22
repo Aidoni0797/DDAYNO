@@ -54,4 +54,76 @@ python manage.py migrate
 Параметр on_delete обязателен в OneToOneField и ForaignKey
 Тип - Что делает - Когда использовать
 CASCADE - Удаляет связанные объекты - Привязанные объекты теряют смысл без родителя
-PROTECT
+PROTECT - Запрещает удаление, если есть связь - При жесткой целостности
+SET_NULL - Устанавливает NULL - Если связь необязательна
+SET_DEFAULT - Устанавливает значение по умолчанию - Если есть "резервный" объект
+SET(value) - Устанавливает заданное значение - Более гибкий вариант SET_DEFAULT
+DO_NOTHING - Ничего не делает - Не рекомендуется - нарушается целостность данных
+
+Работа в Django shell
+
+pythonn manage.py shell
+
+from onetoone.models import User, Account
+
+#Создаем пользователя
+alex = User.objects.create(name='Александр')
+
+#Создаем аккаунт, связанный с пользователем
+acc = Account.objects.create(login='1234', password='6565', user=alex)
+
+#Изменяем имя пользователя через связанный объект
+acc.user.name='Саша'
+acc.user.save()
+
+Двусторонний доступ
+Через Account.user - доступ к User
+Через User.account - доступ к Account
+
+#Создаем пользователя
+alex=User.objects.create(name='Александр')
+
+#Создаем аккаунт и присваиваем его пользователю
+acc = Account(login='1234', password='6565')
+alex.account=acc
+alex.account.save()
+
+#Обновим логин и пароль
+alex.account.login = 'qwerty'
+alex.account.password = '123456'
+alex.account.save()
+
+Django автоматически добавляет атрибут .account к User, даже если он не определен явно - это результат OneToOneField
+
+Фильтрация по связи
+#Получить аккаунт по имени пользователя
+acc = Account.objects.get(user__name='Саша')
+
+#Получить пользователя по логину
+user=User.objects.get(account__login='qwerty')
+
+user__name - означает поле: name из связанной модели User
+account__login - поле login из связанной модели Account
+
+SQL-структура в базе данных
+
+CREATE TABLE "onetoone_user"(
+  "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "name" varchar(20) NOT NULL
+);
+
+CREATE TABLE "onetoone_account"(
+  "login" varchar(20) NOT NULL,
+  "password" varchar(20) NOT NULL,
+  "user_id' bigint NOT NULL PRIMARY KEY REFERENCES "onetoone_user" ("id")
+);
+Таблица onetoone_account не имеет своего id, потому что user_id уже является первичным ключом.
+
+Заключение
+Связь один-к-одному - мощный инструмент, когда:
+- Нужно расширить модель
+- Разделить логически независимые части
+- Обеспечить строгую уникальность связи между двумя таблицами
+
+Используйте OneToOneFrield, чтобы легко управлять такими отношениями, получать доступ к связанным объектам и выполнять фильтрацию
+через двойные подчёркивания.
