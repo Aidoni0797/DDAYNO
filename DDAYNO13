@@ -80,4 +80,4 @@ products = nestle.product_set.all()
 count = nestle.product_set.count()
 
 #Продукты, название которых начинается на "Choc"
-choco_products = nestle.product
+choco_products = nestle.product_set.filter(name__startswith="Choc")
