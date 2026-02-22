@@ -58,4 +58,10 @@ nestle = Company.objects.create(name='Nestle')
 
 #Продукты этой компании
 Product.objects.create(company=nestle, name='Chocolate', price=100)
-Product.objects.create
+Product.objects.create(company=nestle, name='Dragees', price=200)
+
+Доступ к связанным объектам
+
+Из Product в Company
+
+product = P
