@@ -105,3 +105,18 @@ class Product(models.Model):
   company=models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
 
 Добавление товара к компании
+
+apple = Company.objects.create(name='Apple')
+ipad = Product(name='iPad', price=34200)
+ipad.save()
+
+#Добавление существующего объекта (нужно bulk=False)
+apple.product_set.add(ipad, bulk=False)
+
+bulk - это массовое добавление данных за один раз, чтобы ускорить вставку в базу.
+
+Используют, когда нужно добавить много новых объектов сразу (и они ещё не сохранены).
+Если объект уже сохранён - ставят bulk=False, чтобы просто связать, а не вставлять заново.
+
+Удалние всех связей (но не самих объектов)
+apple.product_set.
