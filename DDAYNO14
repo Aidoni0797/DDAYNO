@@ -93,4 +93,45 @@ python_course = Course.objects.create(name="Python")
 python_course.student_set.create(name="Александр")
 
 Получаем всех студентов курса
-students = python_course.student_set
+students = python_course.student_set.all()
+
+Подсчёт студентов
+count = python_course.student_set.count()
+
+student_set формируется по умолчанию. Его можно изменить через related_name
+
+Работа с методами add, remove, clear
+
+Создаём нового студента
+alex = Student.objects.create(name="Александр")
+
+Добавляем его на курс
+python_course.student_set.add(alex)
+
+Удаляем свзяь одного студента с курсом
+python_course.student_set.remove(alex)
+
+Удаляем всех студентов с курса
+python_course.student_set.clear()
+
+Важно: Когда нужна своя промежуточная таблица
+
+По умолчанию Django создаёт промежуточную таблицу без дополнительных данных
+Но если вы хотите:
+- хранить дату зачисления
+- хранить оценку
+- хранить статус (активен/в архиве)
+
+Тогда нужно использовать промежуточную модель (through = )
+
+Когда использовать промежуточную модель 
+
+Пример:
+
+class Enrollment(models.Model):
+  student = models.ForeignKey(Student, on_delete=models.CASCADE)
+  course = models.ForeignKey(Course, on_delete=models.CASCADE)
+  enrolled_at = models.DateTimeField(auto_now_add=True)
+  grade = models.CharField(max_length=2)
+
+class Student(models.Mo)
