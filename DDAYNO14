@@ -134,4 +134,8 @@ class Enrollment(models.Model):
   enrolled_at = models.DateTimeField(auto_now_add=True)
   grade = models.CharField(max_length=2)
 
-class Student(models.Mo)
+class Student(models.Model):
+  name = models.CharField(max_length=30)
+  courses = models.ManyToManyField(Course, through='Enrollment')
+
+Теперь вы можете работать 
