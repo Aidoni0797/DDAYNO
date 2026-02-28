@@ -1,0 +1,96 @@
+DDAYNO14
+
+Организация мвязей между таблицами - Многие - Ко - Многим
+
+Введение
+
+Связт "многие-ко-многим" используется, когда:
+- Несколько объектов одной модели могут быть связаны с несколькими объектами другой модели
+- Это означает, что каждая сторона может иметь множество связей с другой стороной.
+
+Примеры таких связей:
+- Книга - может иметь много авторов, автор может написать много книг
+- Статья - может иметь много тегов, тег может быть у многих статей
+- Студент - может учиться на нескольких курсах, и курс может включать  нескольких студентов.
+
+Как это реализуется в Django
+Django использует поле ManyToManyField, которое:
+- Создаёт третью, промежуточную таблицу в базе данных
+- Эта таблица автоматически управляет связями между моделями
+
+Структура
+Вместо двух таблиц будет создано три:
+Course<->Student->промежуточная таблица
+
+Каждая строка в промежуточной таблице - это связь один студент - один курс
+
+Пример: Курсы и студенты
+
+1. Создаём приложение
+python manage.py startapp manytomany
+
+2. Модели
+from django.db import models
+
+class Course(models.Model):
+  name = models.CharField(max_length=30)
+
+class Student(models.Model):
+  name = models.CharField(max_length=30)
+  courses = models.ManyToManyField(Course)
+
+Student.courses - это связь "многие ко многим"
+Django автоматически создаёт промежуточную таблицу
+
+Миграции
+python manage.py makemigrations
+python manage.py migrate
+
+Что создастся в БД?
+В SQLite будут созданы таблицы:
+1. manytomany_course
+2. manytomany_student
+3. manytomany_student_courses - промежуточная таблица
+
+CREATE TABLE "manytomany_courses"(
+  "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+  "student_id" bigint NOT NULL REFERENCES "manytomany_student" ("id"),
+  "course_id" bigint NOT NULL REFERENCES "manytomany_course" ("id")
+)
+
+Работа в Django shell
+python manage.py shell
+from manytomany.models import *
+
+Создание объектов и связей
+
+Создаём студента
+viktor = Student.objects.create(name="Виктор")
+
+Добавляем курс через связь
+viktor.courses.create(name="Django")
+
+Получаем все курсы Виктора
+courses = viktor.courses.all()
+
+Получаем студентов, записанных на курс Django
+students = Student.objects.filter(courses__name="Django")
+
+Синтаксис двойного подчеркивания
+
+Получить студентов, записанных на курс с ID=1
+Student.objects.filter(courses__id=1)
+
+Получить курсы, на которых учится студент с именем Виктор
+Course.objects.filter(student__name="Виктор")
+
+Обратная связь: student_set
+
+Создаём курс
+python_course = Course.objects.create(name="Python")
+
+Добавляем студента на курс
+python_course.student_set.create(name="Александр")
+
+Получаем всех студентов курса
+students = python_course.student_set
