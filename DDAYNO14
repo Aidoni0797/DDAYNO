@@ -138,4 +138,12 @@ class Student(models.Model):
   name = models.CharField(max_length=30)
   courses = models.ManyToManyField(Course, through='Enrollment')
 
-Теперь вы можете работать 
+Теперь вы можете работать с отношениями напрямую через модель Enrollment.
+
+Заключение
+
+Связь многие-ко-многим:
+- Подходит, когда обе стороны могут иметь множество связей
+- Django упрощает работу через ManyToManyField
+- Используйте related_name, add(), remove(), clear(), filter(), annotate()
+- 
