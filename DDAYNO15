@@ -74,4 +74,4 @@ python manage.py createsuperuser
 
 python manage.py collecstatic
 
-Когда ваш проект готов к развертыванию,
+Когда ваш проект готов к развертыванию, эта команда собирает все статические файлы (CSS, JavaScript )
