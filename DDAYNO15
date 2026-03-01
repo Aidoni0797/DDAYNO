@@ -70,4 +70,8 @@ python manage.py shell -i ipython
 python manage.py createsuperuser
 
 Эта команда создает администратора с полными правами (is_superuser=True and is_stuff=True), который может получить
-доступ к панели администратора Django. Она запросит у вас
+доступ к панели администратора Django. Она запросит у вас имя пользователя, адрес электронной почты и пароль.
+
+python manage.py collecstatic
+
+Когда ваш проект готов к развертыванию,
