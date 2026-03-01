@@ -146,4 +146,4 @@ class Student(models.Model):
 - Подходит, когда обе стороны могут иметь множество связей
 - Django упрощает работу через ManyToManyField
 - Используйте related_name, add(), remove(), clear(), filter(), annotate()
-- 
+- Для хранения доп№данных о связи - используйте through и собственную модель
