@@ -1,0 +1,99 @@
+DDAYNO16
+
+Некоторые моменты, которые вы должны знать перед решением задач
+
+Этот раздел объясняет ключевые моменты работы с моделями Django, без которых невозможно решить следующие задания.
+Рекомендуется внимательно изучить его перед выполнением задач.
+
+Эту лекцию я добавил на основе ваших комментариев, которые вы оставляете в конце каждой главы. Надеюсь, теперь курс стал лучше
+и понятнее. Если что-то нужно улучшить или можно сделать курс ещё качественнее - буду рад вашим предложениям. Спассибо!
+
+1. Аргумент on_delte в ForeignKey
+Поле ForeignKey обязательно требует указать аргумент on_delete. Если его не указать - Django вызовет ошибку:
+TypeError:__init__() missing 1 required positional argument: 'on_delete'
+Аргумент определяет, что произойдет с объектами, которые ссылаются на удаляемый объект. Примеры:
+- models.CASCADE - удалить зависимые объекты
+- models.SET_NULL - установить NULL (требует null=True)
+- models.PROTECT - запретить удаление
+
+2. Параметры null=True and blank=True
+- null=True - в базе данных можно хранить NULL
+- blank=True - Django позволяет оставлять поле пустым в формах
+Если оба НЕ указаны - поле является обязательным, а попытка сохранить пустое значение приведёт к ошибке
+IntegrityError(для базы данных) или ValidationError (в формах)
+
+3. related_name и обратный доступ
+Если вы укажете:
+comments = models.ForeignKey(Post, related_name="comments", ...)
+
+То обратный доступ будет таким:
+post.comments.all()
+
+related_name - это имя атрибута. через который мы обращаемся к связанным объектам с другой стороны.
+
+4. Сортировка в Meta
+В модели можно указать сортировку по умолчанию:
+class Meta:
+  ordering = ['-created_at']
+'-created_at' - сортировка по убыванию
+
+5. Валидаторы (validators)
+В Django есть встроенные валидаторы, которые проверяют значения перед сохранением
+Пример:
+
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+class Review(models.Model):
+  rating = models.IntegerField(
+    validators = [MinValueValidator(1), MaxValueValidator(5)]
+  )
+Если значение меньше 1 или больше 5 - Django вызовет ValidationError
+
+6. Автоматическая генерация slug
+
+Пример метода save():
+def save(self, *args, **kwargs):
+  if not self.slug:
+    self.slug = slugify(self.name)
+  super().save(*args, **kwargs)
+
+Если сохранить объект с:
+name="Молоко"
+slug=""
+
+то Django сгененирует:
+slug="moloko"
+(или транслитерация, в зависимости от настроек slugify)
+
+7. Определение - новый объект или обновление
+Чтобы понять, создаётся объект впервые или обновляется, проверяют self.pk:
+- Если self.pk есть - объект уже существует (обновление).
+- Еслси self.pk нет - объект создаётся впервые
+
+Пример корректного метода save с логированием:
+
+def save(self, *args, **kwargs):
+  if self.pk:
+    print(f"Обновлен товар: {self.name}")
+  else:
+    print(f"Создан новый товар: {self.name}")
+
+  super().save(*args, **kwargs)
+
+8. Правильна\я реализация метода delete()
+Неправильно:
+
+def delete():
+  print("Пост удалён.")
+  ыгзук()ювудуеу()
+
+Проблемы;
+1. Нет аргумента self
+2. Нет *args, **kwargs
+3. Вызывает super().delete() без контекста
+4. Такой метод вообще не будет вызван Django.
+Правильно:
+
+def delete(self, *args, **kwargs):
+  print("Пост удалён.")
+  super().delete(*args, **kwargs)
