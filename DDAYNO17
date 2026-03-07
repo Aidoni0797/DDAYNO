@@ -1,0 +1,9 @@
+DDAYNO17
+Подсказки для будущих задач:
+- editable=False часто используется для авто-полей (created_at, updates_at)
+
+- unique_for_date, unique_for_month, unique_for_year полезны для событий;
+
+- db_index=True нужен, когда ты собираешься часто фильтровать по полю.
+
+Код - это поезия логики.
