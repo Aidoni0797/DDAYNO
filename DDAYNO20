@@ -36,4 +36,69 @@ QuerySet - это не просто список объектов. Это объ
 Post.objects.get(pk=1)
 Поведение:
 - если найден один объект - он возвращается
-- Если
+- Если не найден ни один - DoesNotExist
+- Если найдено более одного - MultipleObjectsReturned.
+
+Примеры:
+post = Post.objects.get(id=1)
+post = Post.objects.get(text="Мой второй текст в БД")
+post = Post.objects.get(pk=3)
+
+Обработка исключений:
+try:
+  post = Post.objects.get(text='какой-то текст')
+except Post.DoesNotExist:
+  print("Пост не найден")
+except Post.MultipleObjectsReturned:
+  print("Найдено несколько постов")
+
+Метод all() возвращает все объекты модели в виде QuerySet. Сам запрос к базе будет выполнен только при обращении к данным.
+
+Синтаксис:
+posts = Post.objects.all()
+
+Пример вывода:
+for post in posts:
+  print(post.id, post.text)
+
+Метод filter()
+
+Метод filter возвращает QuerySet объектов, удовлетворяющих условиям. Не вызывает исключений и может вернуть любое 
+количество объектов, включая 0.
+
+синтаксис:
+Post.objects.filer(pk=3)
+Post.objects.filter(pk=3, text='Моя третья запись в БД')
+
+Если объектов нет - будет возвращён пустой QuerySet.
+
+Операторы сравнения в Django ORM(gt, lt, gte, lte)
+
+В Django для фильтрации данных тспользуются специальные суффиксф, которые добавляются к названию поля через двойное подчеркивание 
+(__). Это позволяет строить сложные запросы к базе данных, используя синтаксис Python.
+
+1. Расшифровка аббервиатур
+Эти названия пришли из математики и программирования:
+gt (Greater Than) - Больше
+lt (Less Than) - Меньше
+gte (Greater Than or Equal) - Больше или ровно
+lte (Less Than or Equal) - Меньше или равно
+
+2. Как это работает на практике
+Представим вашу модель CategoryProducts. Эти операторы часто используются с датами (created, updated)
+
+Работа с датами:
+Если вы хотите найти все категории, созданные после определеннной даты:
+import datetime
+from myapp.models import CategoryProducts
+
+new_categories = CategoryProducts.objects.filter(created__gt=datetime.date(2025,1,1))
+
+Работа с числами (на примере цены):
+Если бы у вас было поле price, это выглядело бы так:
+- price__gt = 100 - цена > 100
+- price__lte=500 - цена <= 500
+
+3. Сравнение со стандартным SQL
+
+Чтобы вы понимали, что происходит "под капотом", вот как Django переводит ваш код:
