@@ -74,3 +74,39 @@ class ProductListView(ListView):
 (или под именем, которое вы установили в context_object_name)
 
 Типичный шаблон для ListView:
+<h1>Список продуктов</h1>
+
+{% if object_list %} {# Или {{ product_list }} или {{ my_products }} #}
+    <ul>
+        {% for product in object_list %}
+            <li>
+                <a href="{% url 'product_detail_by_sku' product_sku=product.sku %}">
+                    {{ product.name }} ({{ product.manufacturer.name }}) - ${{ product.price }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; первая</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+
+{% else %}
+    <p>Продуктов пока нет.</p>
+{% endif %}
