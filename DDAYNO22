@@ -35,4 +35,42 @@ product_list для модели Product)
 
 4. Пагинация(Pagination): paginate_by:
 Это один из самых мощных атрибутов ListView. Установите его, чтобы автоматически разбивать список на страницы.
-paginate_by: Целое число, указывающее, сколько объектов должно быть
+paginate_by: Целое число, указывающее, сколько объектов должно быть на каждой странице.
+Пример: paginate_by=10
+
+Доступ к данным пагинации в шаблоне:
+page_obj: Объект текущей страницы, содержащий объекты для этой страницы (page_obj.object_list)
+paginator: Объект пагинатора, содержащий информацию о всех страницах
+(paginator.name_pages, paginator.page_range)
+is_paginated: Булево значение, True если список был разбит на страницы
+Методы page_obj: has_previous, has_next, previous_page_number, next_page_number, start_inde, end_index и т.д.
+
+5. Настройка QuerySet: get_queryset()
+
+Если вам нужна более сложная логика для определения QerySet'a (например, фильтрация по GET-параметрам, сортировка,
+выборка связанных данных), вы должны переопределить метод get_queryset(self)
+- Этот метод должен вернуть QuerySet
+Пример:
+class ProductListView(ListView):
+    model = Product
+    template_name = 'webshop/product_list.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset() # Начинаем с базового QuerySet (Product.objects.all())
+
+        search_query = self.request.GET.get('q')
+        if search_query:
+            queryset = queryset.filter(name__icontains=search_query)
+
+        return queryset.filter(is_available=True).order_by('name')
+
+6. Добавление дополнительного контекста: get_context_data()
+Как и в других CBV, вы можете переопределить get_context_data(self, **kwargs) для добавления любых других данных в шаблон,
+помимо основного списка объектов.
+
+Не забывайте вызывать super().get_context_data(**kwargs)
+
+Важно: В get_context_data() основной список объектов уже будет доступен как self.object_list
+(или под именем, которое вы установили в context_object_name)
+
+Типичный шаблон для ListView:
