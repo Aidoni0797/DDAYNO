@@ -19,3 +19,5 @@ ListView - это специализированное обощенное кла
 Пример: model=Product
 - Или queryset:  вы хотите более сложный или заранее отфильтрованный набор данных,
 вы можете вместо model указать атрибут queryset, который должен быть QuerySet'ом
+Пример: queryset = Product.objects.filter(is_available=True).order_by('-created_at')
+- template_name: Указывает путь к HTML-шаблону, который будет 
