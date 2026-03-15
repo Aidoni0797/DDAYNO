@@ -19,4 +19,6 @@ form_class: Ссылка на класс Django-формы, которую FormV
 Пример: form_class = ContactForm
 
 template_name: Путь к HTML-шаблону, который будет отображать форму.
-Пример: tem
+Пример: template_name = 'webshop/contact_form.html'
+
+3. Обработка успешной отправки: success_url или get_success_u
