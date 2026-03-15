@@ -70,5 +70,59 @@ form_valid(self, form):
 
 Вызывается, когда форма успешно прошла валидацию
 
-form здесь - это валидный, 
-. 
+form здесь - это валидный, связанный экземпляр вашей формы. Вы можете получить доступ к проверенным данным через form.cleaned_data['field_name']
+
+Вы должны поместить сюда свою логику обработки данных (например, сохранение в БД, отправка email)
+
+. Обязательно верните super().form_valid(form) в конце, чтобы выполнить стандартное перенаправление на success_url
+
+form_invalid(self, form):
+
+Вызывается, когда форма не прошла валидацию
+
+По умолчанию, этот метод просто возвращает self.render_to_response(self.get_context_data(form=form)), что приводит к
+повторному отображению формы с ошибками.
+
+Обычно вам не нужно переопределять этот метод, если вы довольны стандартным поведением. Вы можете переопределить его, если хотите
+добавить какую-то специфическую логику при неудачной валидации (например, логирование).
+
+Пример (обобщенный)
+
+# webshop/views.py
+from django.views.generic import FormView
+from django.urls import reverse_lazy
+from .forms import MyAwesomeForm # Ваша форма
+
+class MyAwesomeFormView(FormView):
+    template_name = 'webshop/my_awesome_form.html'
+    form_class = MyAwesomeForm
+    success_url = reverse_lazy('thank_you_page') # Перенаправление после успеха
+
+    def form_valid(self, form):
+        # Здесь мы обрабатываем данные, которые уже прошли проверку
+        # Например:
+        user_name = form.cleaned_data['name']
+        user_email = form.cleaned_data['email']
+        user_message = form.cleaned_data['message']
+
+        # Имитация сохранения данных или отправки email
+        print(f"Получено новое сообщение от {user_name} ({user_email}): {user_message}")
+
+        # Важно: Вызываем родительский метод для выполнения перенаправления
+        return super().form_valid(form)
+
+    # Обычно не нужно переопределять form_invalid, если стандартное поведение подходит
+    # def form_invalid(self, form):
+    #     print("Форма не прошла валидацию. Ошибки:", form.errors)
+    #     return super().form_invalid(form) # Повторный рендеринг формы с ошибками
+
+
+<h1>Моя классная форма</h1>
+
+<form method="post"> {# Важно: method="post" #}
+    {% csrf_token %} {# Обязательный токен безопасности #}
+
+    {{ form.as_p }} {# Отображаем поля формы и ошибки #}
+
+    <button type="submit">Отправить</button>
+</form>
