@@ -21,4 +21,6 @@ form_class: Ссылка на класс Django-формы, которую FormV
 template_name: Путь к HTML-шаблону, который будет отображать форму.
 Пример: template_name = 'webshop/contact_form.html'
 
-3. Обработка успешной отправки: success_url или get_success_u
+3. Обработка успешной отправки: success_url или get_success_url()
+
+После того как форма успешно прошла валидацию и была обработана (например, отправлено письмо)
