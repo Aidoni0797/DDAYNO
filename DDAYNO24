@@ -62,4 +62,70 @@ def form_valid(self, form):
     return super().form_valid(form)
 
 5. Доступ к форме в шаблоне:
-В шаблоне экземпляр формы 
+В шаблоне экземпляр формы  доступен под переменной form.
+
+6. CSRF-защита:
+Django автоматически включает защиту от CSRF (Cross-Site Request Forgery) для форм. Обязательно используйте тег
+{% csrf_token %} внутри вашей HTML <form>!
+
+Шаблон для FormView
+
+<h1>Контактная форма</h1>
+
+<form method="post">
+    {% csrf_token %} {# ОБЯЗАТЕЛЬНО! #}
+
+    {{ form.as_p }} {# Рендерит поля формы как параграфы #}
+    {# Вы также можете рендерить каждое поле по отдельности для более тонкой настройки #}
+    {# <p>
+        <label for="{{ form.name.id_for_label }}">{{ form.name.label }}:</label>
+        {{ form.name }}
+        {% if form.name.errors %}<ul class="errorlist">{% for error in form.name.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </p> #}
+
+    <button type="submit">Отправить</button>
+</form>
+
+Подготовка: Создание файла forms.py
+
+Поскольку мы еще не проходили детально тему Django Forms, я предоставляю вам готовые классы форм. Создайте новый фал forms.py 
+внутри вашего приложения webshop (то есть webshop/forms.py/)
+
+Содержимое webshop/forms.py:
+
+from django import forms
+
+class ContactForm(forms.Form):
+    name = forms.CharField(label="Ваше имя", max_length=100, help_text="Пожалуйста, введите ваше полное имя.")
+    email = forms.EmailField(label="Ваш Email", help_text="Мы свяжемся с вами по этому адресу.")
+    message = forms.CharField(label="Ваше сообщение", widget=forms.Textarea, help_text="Введите ваше сообщение здесь.")
+    
+    # Можно добавить метод clean_<field_name> для валидации конкретного поля
+    def clean_message(self):
+        message = self.cleaned_data['message']
+        if len(message) < 10:
+            raise forms.ValidationError("Сообщение должно быть не менее 10 символов.")
+        return message
+
+class FeedbackForm(forms.Form):
+    RATING_CHOICES = [
+        ('1', '1 - Ужасно'),
+        ('2', '2 - Плохо'),
+        ('3', '3 - Средне'),
+        ('4', '4 - Хорошо'),
+        ('5', '5 - Отлично'),
+    ]
+    rating = forms.ChoiceField(label="Ваша оценка", choices=RATING_CHOICES, widget=forms.RadioSelect)
+    comment = forms.CharField(label="Комментарий (необязательно)", required=False, widget=forms.Textarea)
+    email = forms.EmailField(label="Ваш Email (необязательно)", required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        rating = cleaned_data.get('rating')
+        comment = cleaned_data.get('comment')
+
+        if rating and int(rating) < 3 and not comment:
+            self.add_error('comment', "Если оценка ниже 3, пожалуйста, оставьте комментарий.")
+        return cleaned_data
+
+Теперь, когда у нас есть формы, мы можем использовать их в наших FormView!
