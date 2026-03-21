@@ -98,3 +98,4 @@ def my_view(request):
 
 Документация Django
 Официальная документация Django по декораторам аутентификации:
+login_required - https://docs.djangoproject.com/en/5.0/topics/auth/default/#the-login-required-decorator
