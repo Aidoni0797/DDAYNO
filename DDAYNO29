@@ -99,3 +99,14 @@ def my_view(request):
 Документация Django
 Официальная документация Django по декораторам аутентификации:
 login_required - https://docs.djangoproject.com/en/5.0/topics/auth/default/#the-login-required-decorator
+permission_required - https://docs.djangoproject.com/en/5.0/topics/auth/default/#the-login-required-decorator
+user_passes_test - https://docs.djangoproject.com/en/5.0/topics/auth/default/#the-login-required-decorator
+
+Официальная документация по декораторам HTTP-методов
+require_jttp_methods - https://docs.djangoproject.com/en/5.0/topics/http/decorators/#:~:text=http_methods%28request_method_list%29%5Bsource%5D
+
+Статья на Хабре
+Лекция о декораторах в Python (для понимания базовой концепции)
+Декораторы в Python: Просто, понятно, на примерах  - https://habr.com/ru/articles/141411/
+Эта статья отлично объясняет, как работают декораторы в Python, что является фундаментом для понимания их использования в 
+Django
