@@ -38,4 +38,54 @@ webshop.delete_product (формат: [app_label].[action]_[model_name]).
 3. UserPassesTextMixin
 Назначение: Самый гибкий миксин. Позволяет написать свою собственную логику проверки. Он запускает метод
 test_func(), и если этот метод возвращает True, доступ разрешен. Если False запрещен.
-Как использовать
+Как использовать: Наследуйтесь от миксина и перепределите метод test_func()
+Пример: test_func() может проверить, является ли текущий пользователь владельцем объекта, который он пытается изменить.
+
+Как использовать Миксины(Синтаксис)
+
+Самое важное правило: Миксины должны стоять перед основным классом предсставления в списке наследования.
+Например: class MyView(Mixin1, Mixin2, Mixin3, MainView):
+
+Правильная  последовательность наследования выглядит так:
+from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
+# Правильно: Миксины идут перед CreateView
+class SecureProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    # Атрибуты, которые относятся к CreateView
+    model = Product
+    fields = '__all__'
+    success_url = '/products/list/'
+
+    # Атрибуты, которые относятся к миксинам
+    login_url = '/login/' # Атрибут от LoginRequiredMixin
+    permission_required = 'webshop.add_product' # Атрибут от PermissionRequiredMixin
+
+Django проверяет классы в списке наследования слева направо. Поэтому сначала проверяются миксины, и только потом
+выполняется логика основного представления.
+
+Практический Пример: Создание защищенной страницы
+
+Давайте применим LoginRequiredMixin PermissionRequiredMixin к нашему CreateView для создания продукта
+# webshop/views.py
+from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.urls import reverse_lazy
+
+from .models import Product
+
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Product
+    fields = ['name', 'description', 'price']
+    template_name = 'webshop/product_form.html'
+    success_url = reverse_lazy('product_list_page')
+
+    # Атрибуты миксинов
+    login_url = reverse_lazy('login_page') # Куда перенаправить неавторизованного
+    permission_required = 'webshop.add_product' # Какое разрешение требуется
+
+    # Перенаправляем, если нет прав, вместо стандартной 403 ошибки
+    raise_exception = False # Это атрибут PermissionRequiredMixin
+    redirect_field_name = 'next' # По умолчанию, но полезно знать
+
+В этом коде, когда пользователь пытается получить доступ к ProductCreateView
