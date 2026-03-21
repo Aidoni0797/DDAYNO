@@ -16,3 +16,76 @@ DDAYNO28
 2. Ошибка 500 (Server Error)
 Причина: Что-то пошло не так на стороне сервера. Это может быть ошибка в коде, исключение, которое не было перехвачено, 
 или проблема с базой данных
+Примеры: Вы пытаетесь обратиться к атрибуту, которого не существует (obj.non_existent_attribute) или возникает ошибка
+при сохранении в базу данных
+Когда возникает: В режиме DEBUG = True Django показывает вам подробный трейсбэк. В режиме DEBUG=False он просто отображает 
+общую страницу ошибки 500.
+
+Как Настроить Страницы Ошибок
+Django ищет специальные функции-обработчики в файле urls.py вашего корневого приложения (тот, что указан в settings.py)
+1. Настройка страницы 404
+- Функция-обработчик: Должна называться handler404
+- Сигнатура функции: handler404(request, exception)
+- Что делает: Вы должны создать свою функцию, которая будет возвращать HttpResponse с вашим кастомным HTML-шаблоном для ошибки 404.
+
+# myproject/urls.py
+from django.shortcuts import render
+
+def page_not_found_view(request, exception):
+    # Эта функция должна принимать два аргумента
+    return render(request, '404.html', status=404)
+
+handler404 = page_not_found_view
+
+Важно: Не забудьте создать файл 404.html в папке templates вашего проекта
+
+2. Настройка страницы 500
+
+Функция-обработчик: Должна называться handler500
+Сигнатура функции: handler500(request)
+Что делает: Аналогично handler404, эта функция должна возвращать HttpResponse с вашим кастомным HTML-шаблоном для ошибки 500
+# myproject/urls.py
+from django.shortcuts import render
+
+def server_error_view(request):
+    # Обратите внимание: эта функция принимает только один аргумент
+    return render(request, '500.html', status=500)
+
+handler500 = server_error_view
+
+Важно: Создайте файл 500.html в папке templates вашего проекта
+
+Ручной вызов Ошибок в Views
+
+Иногда вам нужно явно сказать Django, что произошла ошибка
+1. Вызов 404 в представлении
+- Вы можете импортировать Http404 и вызвать его, когда не находите объект, используя свой собственный QuerySet
+# webshop/views.py
+from django.http import Http404
+from .models import Product
+
+def product_detail(request, product_id):
+    try:
+        product = Product.objects.get(pk=product_id)
+    except Product.DoesNotExist:
+        raise Http404("Такого продукта не существует.") # Передаем свое сообщение
+
+    return render(request, 'product_detail.html', {'product': product})
+
+
+Http404 автоматически запускает handler404. Для простых случаев лучше использовать шорткат
+get_object_or_404(), который делает то же самое, но с меньшим количеством кода
+
+2. Вызов 500 в представлении
+- Вы можете вызвать любое стандартное исключение Python, например, ValueError TypeError Django автоматически обработает его с помощью
+handler404 (DEBUG=False)
+- В крайних случаях можно явно вызвать raise Exception("Какая-то киртическая ошибка")
+
+Настройка для DEBUG=False
+
+Самое главное: Настроенные обработчики работают только тогда, когда в settings.py установлен DEBUG=False. В режиме
+DEBUG=True Django всегда будет показывать подробные страницы ошибок для разработчиков
+Чтобы протестировать ваши кастомные страницы, вам нужно будет:
+1. Установить DEBUG=False в settings.py
+2. Добавить ваш домен в ALLOWED_HOSTS=['yourdomain.com', '127.0.0.1']
+3. Запустить сервер.
