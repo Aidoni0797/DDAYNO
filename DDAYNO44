@@ -1,0 +1,65 @@
+DDAYNO44
+Задание
+
+Теперь ваша задача - подготовить шаблоны для работы с корзиной!
+Перейдите в папку templates/product/ вашего приложения
+Внутри этой папки создайте новый файл с названием
+cart_detail.html
+
+Вставьте туда этот шаблон:
+{% extends 'base.html' %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<h2 class="text-center my-4">Ваша корзина</h2>
+
+{% if cart.items.all %}
+    <div class="row row-cols-1 g-4">
+        {% for item in cart.items.all %}
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image }}" class="img-fluid rounded me-4" style="max-height: 100px;">
+                        {% endif %}
+
+                        <div class="flex-grow-1">
+                            <h5 class="card-title">{{ item.product.name }}</h5>
+                            <p class="card-text mb-1">Количество: <b>{{ item.quantity }}</b></p>
+                            <p class="card-text mb-1">Цена за шт: <b>{{ item.product.price }} ₽</b></p>
+                            <p class="card-text">Общая стоимость: <b>{{ item.total_price }} ₽</b></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-5 p-3 bg-light rounded shadow-sm">
+        <h4 class="m-0">Итого: <b>{{ cart.total_price }} ₽</b></h4>
+        <button class="btn btn-success btn-lg">Купить</button>
+    </div>
+
+{% else %}
+    <div class="alert alert-info text-center" role="alert">
+        Ваша корзина пуста.
+    </div>
+{% endif %}
+
+{% endblock %}
+
+Теперь откройте файл home.html (он у вас находится в папке templates/product/)
+Найдите кнопку Добавить в корзину и замените её на следующий код: 
+<form action="{% url 'homepage:add_to_cart' product.slug %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary mt-3 w-100">
+        <i class="bi bi-cart"></i> Добавить в корзину
+    </button>
+</form>
+
+
+После этого кнопка на странице будет отправлять POST-запрос в представление add_to_cart, и товары начнут попадать в корзину
+пользователя
