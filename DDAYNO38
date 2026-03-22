@@ -10,4 +10,4 @@ DDAYNO38
 Не забудьте зарегистрироваться в админке:
 @admin.register(BankAccount)
 class BankAccountAdmin(admin.ModelAdmin):
-  list_display = ('user'.)
+  list_display = ('user', 'account_number', 'balance')
