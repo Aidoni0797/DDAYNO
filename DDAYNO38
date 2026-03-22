@@ -11,3 +11,5 @@ DDAYNO38
 @admin.register(BankAccount)
 class BankAccountAdmin(admin.ModelAdmin):
   list_display = ('user', 'account_number', 'balance')
+  search_fields = ('user__username', 'account_number')
+  readonly+fields = ('account_number')
