@@ -1,0 +1,101 @@
+DDAYNO42
+Настройка базового шаблона и домашней страницы
+Описание:
+В этом упражнении вы подготовите шаблоны для своего Django-проекта и создадите домашнюю страницу приложения product.
+В этом уроке я предложил готовый шаблон, поскольку мы еще не изучали эту тему. В следующих главах мы вернемся к ней и подробно 
+рассмотрим. После этого вы сможете самостоятельно создавать шаблоны.
+
+Что нужно сделать:
+1. В папке templates создайте файл base.html
+Откройте файл и скопируйте в него весь код, который представлен ниже:
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}My Shop{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">MAGNAT</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cart/">Корзина</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/payment/">Банк</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+1. В папке templates/products/ создайте файл home.html
+Откройте файл и скопируйте в него весь код, который представлен ниже:
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="text-center mb-4">Категории</h2>
+<div class="container my-5">
+    <div class="row g-4 justify-content-center">
+        {% for category in categories %}
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                <a href="?category={{ category.slug }}" class="card h-100 text-decoration-none text-dark shadow-sm">
+                    <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                        <h5 class="card-title text-center">{{ category.name }}</h5>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if selected_category %}
+    <h2 class="text-center my-4">Продукты категории: {{ selected_category.name }}</h2>
+    <div class="container my-5">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for product in products %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <a href="" class="text-decoration-none text-dark">
+                            <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
+                        </a>
+                        <div class="card-body">
+                            <a href="" class="text-decoration-none text-dark">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                            </a>
+                            <p class="card-text">Цена: <b>{{ product.price }}</b></p>
+                            <button class="btn btn-primary mt-3 w-100">
+                                <i class="bi bi-cart"></i> Добавить в корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
