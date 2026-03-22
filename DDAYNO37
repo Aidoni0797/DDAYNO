@@ -1,0 +1,37 @@
+DDAYNO37
+
+Создание модели Корзины
+
+В нашем проекте уже есть модели Ктегории и Товары. Теперь необходимо создать модели для корзины, где будут храниться товары,
+добавленные пользователями.
+
+Корзина должна поддерживать только авторизованных пользователей.
+После создания моделей обязательно зарегистрируйте их на панели администратора
+
+class CartItemInline(admin.TabularInline):
+  model = CartItem
+  extra = 1
+
+@admin.register(Cart):
+class CardAdmin(admin.ModelAdmin):
+  list_display = ('user', 'created_at', 'updated_at', 'total_price')
+  inlines = [CartItemline]
+
+@admin.register(CartItem)
+class CartItemAdmin(admin.ModelAdmin):
+  list_display = ('cart', 'product', 'quantity', 'total_price')
+  list_filter = ('cart', 'product')
+
+Требования к моделям
+1. Модель Cart (Корзина)
+Поле user - связь с моделью пользователя (settings.AUTH_USER_MODEL), чтобы корзина могла быть как у зарегистрированного
+пользователя, так и у гостя.
+Поле created_at - дата создания
+Поле updated_at - дата обновления
+Свойство total_price - сумма всех товаров в корзине
+
+2. Модель CartItem(Элемент корзины)
+Поле cart - связь с моделью Cart (одна корзина может содержать несколько товаров)
+Поле product - связь с моделью Product
+Свойство total_price - цена данного товара с учётом количества
+Ограничение unique_together = ('cart', 'product'), чтобы один товар не дублировался в корзине
