@@ -18,4 +18,16 @@ name, email, message - это поля формы
 Django сам сгенерирует для них HTML-элементы <input> или <texxtarea>
 
 2. Поля и виджеты
-Каждое поле формы имеет тип (например, CharField, EmailField) и может использовать 
+Каждое поле формы имеет тип (например, CharField, EmailField) и может использовать определенный виджет - это то, как поле 
+будет отображаться в HTML.
+
+Примеры:
+class LoginForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Ваш логин'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(widget=forms.PasswordInput())
+
+TextInput - обычное текстовое поле
+EmailInput - поле ввода email
+PasswordInput - поле ввода пароля (символы скрыты)
+Любой виджет можно настроить через attrs
