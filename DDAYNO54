@@ -33,4 +33,86 @@ forms.EmailField: Поле для ввода email-адреса. Django авто
 
 forms.IntegerField: Для ввода целых чисел
 
-forms.Date
+forms.DateField: Для ввода даты
+
+forms.BooleanFeild: Поле для чекбокса (True/False)
+
+forms.ChoiceField: Поле для создания выпадающего списка или радио-кнопок
+
+forms.ModelChoiceField: Используется для создания выпадающего списка на основе данных из вашей модели Django.
+
+Помимо типа, полям можно задавать дополнительные параметры, такие как:
+label: Текст, который будет отображаться рядом с полем.
+required: Логическое значение. которое указывает, является ли поле обязательным (True по умолчанию)
+help_text: Подсказка для пользователя.
+
+Минимальный пример
+
+Например мы хотим создать простую форму для сбора имени и email-адреса пользователя
+
+Шаг 1. Создаем forms.py
+
+В наше приложении создаем файл forms.py и добавим в него следующий код:
+from django import forms
+
+class ContactForm(forms.Form):
+    name = forms.CharField(label='Ваше имя', max_length=100)
+    email = forms.EmailField(label='Ваш Email', required=True)
+
+
+Здесь мы создали класс ContactForm с двумя полями: name (текстовое поле с ограничением в 100 символов) и email
+(поле для email, которое является обязательным).
+
+Шаг 2. Создаем представление (view)
+
+Теперь нам нужно создатьDjango-представление, которое будет обрабатывать эту форму. В файле views.py добавьте код:
+from django.shortcuts import render
+from .forms import ContactForm
+
+def contact_view(request):
+    if request.method == 'POST':
+        # Создаём экземпляр формы и заполняем его данными из запроса
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # Если данные валидны, получаем их из form.cleaned_data
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            # Здесь можно сохранить данные в базу или отправить email
+            return render(request, 'success.html')
+    else:
+        # Если это GET-запрос, создаём пустой экземпляр формы
+        form = ContactForm()
+
+    return render(request, 'contact.html', {'form': form})
+
+В этом коде мы:
+1. Импортируем нашу форму ContactForm
+2. Создаем представление contact_view
+3. Проверяем, является ли запрос POST (оправлена ли форма)
+4. Если да, создаем экземпляр формы, передавая в него данные из request.POST
+5. Используем метод form.is_valid() для запуска валидации. Если данные корректны, они становятся доступны через
+form.cleaned_data.
+6. Если запрос не POST (например, пользователь просто зашел на страницу), мы создаем пустую форму.
+7. Передаем объект form в шаблон contact.html
+
+Шаг 3: Создаем шаблон
+Наконец создадим HTML-шаблон для отображения формы. Создаем файл contact.html в папке templates вашего приложения.
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Форма обратной связи</title>
+</head>
+<body>
+    <h1>Свяжитесь с нами</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Отправить</button>
+    </form>
+</body>
+</html>
+
+
+
+Обратите внимание на ключевые моменты:
+{% csrf_token %}: Эьто
