@@ -30,4 +30,83 @@ class LoginForm(forms.Form):
 TextInput - обычное текстовое поле
 EmailInput - поле ввода email
 PasswordInput - поле ввода пароля (символы скрыты)
-Любой виджет можно настроить через attrs
+Любой виджет можно настроить через attrs (например, CSS-классы, placeholder и т.д.)
+
+3. Настройка label, initial, help_text
+
+При создании поля можно задать дополнительные параметры:
+class RegisterForm(forms.Form):
+    username = forms.CharField(
+        label="Имя пользователя",
+        max_length=50,
+        initial="User123",
+        help_text="Введите уникальное имя. Только буквы и цифры.",
+    )
+    email = forms.EmailField(label="Ваш email")
+    password = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput,
+        help_text="Минимум 8 символов."
+    )
+label - название поля в форме
+initial - значение по умолчанию
+help_text - подсказка, которая выводится рядом с полем.
+
+4. Работа с cleaned_data
+
+КОгда пользователь отправляет форму, Django сначала проверяет ее с помощью метода .is_valid(). Если данные корректны,
+они попадают в словарь cleaned_data.
+
+Пример использования:
+def my_view(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data["name"]
+            email = form.cleaned_data["email"]
+            message = form.cleaned_data["message"]
+            # Здесь можно сохранить данные или отправить email
+    else:
+        form = ContactForm()
+
+
+5№ Создание своей валидации
+
+Django позволяет добавлять кастомную проверку данных. Есть два способа:
+
+5.1. Метод clean_<field>
+Используется для проверки конкретного поля.
+class RegisterForm(forms.Form):
+    username = forms.CharField(max_length=20)
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        if "@" in username:
+            raise forms.ValidationError("Имя пользователя не может содержать @")
+        return username
+
+
+5.2. Метод clean
+Используется для общей проверки сразу нескольких полей.
+class RegisterForm(forms.Form):
+    password = forms.CharField(widget=forms.PasswordInput)
+    confirm_password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Пароли не совпадают")
+
+Итоги:
+Сегодня мы узнали:
+как создавать формы через forms.Form
+какие есть типы полей и виджетов
+как настраивать label, initial, help_text
+как работать с cleaned_data
+как писать собственную валидацию (clean_<field> и clean)
+Формы - это фундаментальный инструмент Django. На их основе мы будем строить регистрацию, авторизацию, поиск и многие
+другие функции.
