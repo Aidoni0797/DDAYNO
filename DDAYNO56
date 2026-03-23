@@ -1,0 +1,21 @@
+DDAYNO56
+Django forms.Form
+
+В Django формы являются мощным инструментом для обработки данных, введенных пользователями. Они позволяют автоматически 
+генерировать HTML-поля, проверять корректность данных и преобразовывать их в удобный Python-формат.
+
+1. Определение формы с полями
+Чтобы создать форму, нужно унаследовать ей от forms.Form и описать необходимые поля:
+from django import forms
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    message = forms.CharField(widget=forms.Textarea)
+
+
+name, email, message - это поля формы
+Django сам сгенерирует для них HTML-элементы <input> или <texxtarea>
+
+2. Поля и виджеты
+Каждое поле формы имеет тип (например, CharField, EmailField) и может использовать 
