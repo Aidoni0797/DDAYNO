@@ -1,0 +1,15 @@
+DDAYNO58
+Урок 3. Djnago forms.ModelForm
+В прошлом уроке мы познакомились с forms.Form и научились создавать формы вручную
+Но часто нам нужно создать форму на основе уже существующей модели. Например, форму для добавления товара,поста в блоге или комментария.
+Для этого в Django есть forms.ModelForm
+
+1. Зачем нужен ModelForm
+ModelForm - это специальный класс формы, который автоматически создаёт поля на основе модели
+Вместо того чтобы каждый раз писать: 
+class ProductForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    price = forms.DecimalField(max_digits=10, decimal_places=2)
+    description = forms.CharField(widget=forms.Textarea)
+
+Мы можем использовать ModelForm, 
