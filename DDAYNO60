@@ -9,4 +9,89 @@ DDAYNO60
 
 Django позволяет загружать файлы на сервер при помощи форм
 Важно помнить:
-- форма
+- форма с файлами обязательно должна содержать атрибут enctype="multipart/form-data"
+- данные файлов обрабатываются через request.FILES
+
+Пример формы:
+from django import forms
+
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=100)
+    file = forms.FileField()
+
+В шаблоне:
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Загрузить</button>
+</form>
+
+Контроллер:
+from django.shortcuts import render
+from .forms import UploadFileForm
+
+def upload_file(request):
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            uploaded_file = request.FILES["file"]
+            print(uploaded_file.name, uploaded_file.size)
+    else:
+        form = UploadFileForm()
+    return render(request, "upload.html", {"form": form})
+
+2. Использование FileField and ImageField
+
+Чтобы сохранить файлы в базе данных, Django предоставляет специальные поля:
+FileField - для любых файлов
+ImageField - для изображений (требует установку библиотеки Pillow)
+
+
+Пример модели:
+from django.db import models
+
+class Document(models.Model):
+    title = models.CharField(max_length=200)
+    file = models.FileField(upload_to="documents/")
+
+class Photo(models.Model):
+    description = models.CharField(max_length=200)
+    image = models.ImageField(upload_to="photos/")
+
+
+Параметр upload_to определяет папку внутри MEDIA_ROOT, куда будут сохраняться файлы.
+
+В settings.py
+import os
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+MEDIA_URL - URL-префикс, по которому будут доступны файлы
+MEDIA_ROOT - путь на диске, где они физически хранятся
+
+В urls.py
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    # ... другие маршруты
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+Теперь файлы будут сохраняться в папку media/. а доступны по адресу http:localhost:8000/media/...
+
+4. Отображение загруженных файлов
+
+Чтобы вывести загруженные файлы в шаблоне, нужно использовать путь к файлу, который хранится в модели
+Пример для изображений:
+{% for photo in photos %}
+    <p>{{ photo.description }}</p>
+    <img src="{{ photo.image.url }}" alt="Фото">
+{% endfor %}
+
+Пример документов:
+<a href="{{ document.file.url }}">Скачать файл</a>
+
+Отлично, вижу твой текст. Сейчас утебя в лекции используется стандартный FileField c ClearableFileInput(multiple=True),
+а это как раз тот случай, где Django ругается и кидает ошибку No file was submitted.
