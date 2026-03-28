@@ -33,4 +33,70 @@ class ProductForm(forms.ModelForm):
         fields = "__all__"   # все поля модели автоматически станут полями формы
 
 Теперь у нас есть форма для модели Product, в которой будут поля:
+name
+price
+description
 
+3. Использование fields and exclude
+
+Вутри класса Mets мы можем указать:
+fields - какие поля включить в форму;
+exclude - какие поля исключить
+
+Примеры:
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ["name", "price"]   # только эти поля
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        exclude = ["description"]   # исключим это поле
+
+Обычно лучше использовать fields, чтобы явно указывать, какие поля должны быть в форме.
+
+4. Настройка отображения полей
+Как и в forms.Form, в ModelForm можно настроить  метки, подсказки и виджеты:
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ["name", "price", "description"]
+        labels = {
+            "name": "Название товара",
+            "price": "Цена (в рублях)",
+        }
+        help_texts = {
+            "description": "Опишите товар подробно.",
+        }
+        widgets = {
+            "description": forms.Textarea(attrs={"rows": 5, "cols": 40, "placeholder": "Введите описание"}),
+        }
+
+Таким образоом, мы можем полностью контролировать внешний вид формы.
+
+5. Сохранение данных через форму
+
+Главное отличие ModelForm от обычной формы - возможность сохранять данные прямо в базу
+def create_product(request):
+    if request.method == "POST":
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()  # автоматически создаст объект Product в базе данных
+    else:
+        form = ProductForm()
+    return render(request, "create_product.html", {"form": form})
+
+form.save() - самый простой способ сохранить данные
+Если нужно больше контроля, можно использовать:
+product = form.save(commit=False)  # создаём объект, но не сохраняем
+product.price = product.price * 1.2  # изменяем данные
+product.save()  # теперь сохраняем в базу
+
+
+Итоги:
+
+Сегодня мы узнали:
+- зачем нужен ModelForm
+- как он автоматически создаёт поля на основе модели
+- как использовать fields and exclude
