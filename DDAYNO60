@@ -154,3 +154,21 @@ def multi_upload(request):
         form = MultiUploadForm()
     return render(request, "multi_upload.html", {"form": form})
 
+Модель
+from django.db import models
+
+class AlbumPhoto(models.Model):
+    image = models.ImageField(upload_to="album/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
+Теперь пользователь сможет выбрать несколько файлов, и Django корректно загрузит их все. Главное отличие от обычного
+FileField в том, что мы используем MultipleField, который обрабатывает список файлов и возвращает его в cleaned_data.
+
+Итоги урока:
+1. Форы с файлами должны иметь enctype="multipart/form-data".
+2. Для хранения файлов используются поля FileField and ImageField
+3. Пути хранения задаются через MEDIA_ROOT and MEDIA URL
+4. Загруженные файлы можно выводить в шаблонах через {{object.file.url}}
+5. Для множественной загрузки используется request.FILES.getlist()
+Теперь вы умеете загружать как один файл, так и несколько, сохранять их в модели и выводить в шаблонах.
