@@ -5,3 +5,34 @@ DDAYNO59
 - использоваь собственные валидаторы
 - создавать виджеты
 - управлять отображением (as_p, as_table, as_ul)
+Это позволит сделать формы более удобными и красивыми для пользователей.
+
+1. Изменение стилей и атрибутов
+
+Django-формы по умолчанию выводятся голыми (без стилей). Чтобы интегрировать их, например, с Bootstrap, можно добавить
+атрибуты через widgets или attrs.
+
+Пример (форма входа)
+
+from django import forms
+
+class LoginForm(forms.Form):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            "class": "form-control",
+            "placeholder": "Введите логин"
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control",
+            "placeholder": "Введите пароль"
+        })
+    )
+
+
+Теперь поля формы будут иметь класс form-control, что автоматически применит стили Bootstrap.
+
+2. Добавление пользовательских валидаторов
+
+Иногда свтроенных 
