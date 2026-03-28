@@ -140,4 +140,8 @@ ProductFormSet = formset_factory(ProductForm, formset=BaseProductFormSet)
 - Одновременный ввод связанных данных (например, закказ и позиции заказа)
 
 Итог
-Formset - набор одинаковых
+Formset - набор одинаковых форм
+ModelFormset - набор форм, связанных с моделью
+Важные опции: extra, max_num, can_delete, can_order
+Методы: is_valid(), cleaned_data, save() (для моделей)
+Используются для массового ввода и редактирования данных.
