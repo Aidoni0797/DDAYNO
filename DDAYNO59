@@ -59,4 +59,63 @@ class RegisterForm(forms.Form):
             raise forms.ValidationError("Используйте только Gmail")
         return email
 
-3. Создание собс
+3. Создание собственных виджетов
+
+Виджет отвечает за то, как поле отображается в HTML
+Мы можем наследоваться от существующих виджетов и изменять их.
+Пример: виджет, который автоматически добавляет CSS-класс form-control ко всем инпутам
+class CustomTextInput(forms.TextInput):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("attrs", {})
+        kwargs["attrs"]["class"] = "form-control"
+        super().__init__(*args, **kwargs)
+
+class ProfileForm(forms.Form):
+    name = forms.CharField(widget=CustomTextInput())
+    email = forms.EmailField(widget=CustomTextInput())
+
+Теперь любое поле, использующее CustomTextInput, будет красиво стилизовано.
+
+4. Использование Form.as_p, Form.as_table, Form.as_ul
+
+Django предоставляет три способа быстрого рендеринга формы:
+form.as_p - каждое поле оборачивается в <p>
+form.as_table - каждое поле отображается в строке <tr>
+form.as_ul - каждое поле оборачивается в <li>
+
+Пример в шаблоне:
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Отправить</button>
+</form>
+
+Пример as_table:
+<form method="post">
+  {% csrf_token %}
+  <table>
+    {{ form.as_table }}
+  </table>
+  <button type="submit">Отправить</button>
+</form>
+
+Пример as_ul:
+<form method="post">
+  {% csrf_token %}
+  <ul>
+    {{ form.as_ul }}
+  </ul>
+  <button type="submit">Отправить</button>
+</form>
+
+На практике чаще всего используют form.as_p, а для полного контроля - ручную отрисовку полей ({{form.username}}, {{form.password}})
+
+Итоги:
+
+В этом уроке мы узнали:
+- как стилизовать поля форм с помощью attrs, widgets
+- как подключать пользовательские валидаторы
+- как создавать собственные ваджеты
+- как использовать as_p, as_table, as_ul длябыстрого рендеринга.
+
+Умени кастомизировать формы делает их удобными для пользователя и соответствующими дизайну сайта
