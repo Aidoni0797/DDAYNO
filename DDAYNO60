@@ -95,3 +95,62 @@ urlpatterns = [
 
 Отлично, вижу твой текст. Сейчас утебя в лекции используется стандартный FileField c ClearableFileInput(multiple=True),
 а это как раз тот случай, где Django ругается и кидает ошибку No file was submitted.
+
+Чтобы лекцияработала без ошибок, её нужно переписать через кастомное поле MultipleFileField, которое корректно
+обрабатывает список файлов. Я сделал обновленный вариант твоей лекции, сохранение структуру 
+(Форма-Шаблон-Представление-Модель), только заменил код на полностью рабочий.
+
+5. Загрузка нескольких файлов одновременно
+
+Иногда нужно разрешить пользователю загружать несколько файлов за один раз - например, сразу несколько фотографий для галереи.
+В Django это можно реализовать через кастомное поле формы, которое умеет обрабоатывать список файлов.
+Форма
+from django import forms
+
+# Виджет с поддержкой выбора нескольких файлов
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+# Поле формы, которое обрабатывает список файлов
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        if isinstance(data, (list, tuple)):
+            return [super(MultipleFileField, self).clean(d, initial) for d in data]
+        return super(MultipleFileField, self).clean(data, initial)
+
+# Форма загрузки
+class MultiUploadForm(forms.Form):
+    files = MultipleFileField(
+        required=True,
+        label="Выберите файлы"
+    )
+
+
+Шаблон (multi_upload.html)
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Загрузить</button>
+</form>
+
+Представление 
+from django.shortcuts import render, redirect
+from .forms import MultiUploadForm
+from .models import AlbumPhoto
+
+def multi_upload(request):
+    if request.method == "POST":
+        form = MultiUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            files = form.cleaned_data['files']  # список файлов
+            for f in files:
+                AlbumPhoto.objects.create(image=f)
+            return redirect("multi_upload")  # чтобы обновить страницу
+    else:
+        form = MultiUploadForm()
+    return render(request, "multi_upload.html", {"form": form})
+
