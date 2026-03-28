@@ -14,4 +14,23 @@ class ProductForm(forms.Form):
 
 Мы можем использовать ModelForm, и Django сам создаст все поля из модели
 
-2. Автоматическое создание полей 
+2. Автоматическое создание полей из модели
+Допустим, у нас есть модель:
+from django.db import models
+
+class Product(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField()
+
+Теперь создадим форму:
+from django import forms
+from .models import Product
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = "__all__"   # все поля модели автоматически станут полями формы
+
+Теперь у нас есть форма для модели Product, в которой будут поля:
+
