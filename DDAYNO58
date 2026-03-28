@@ -12,4 +12,6 @@ class ProductForm(forms.Form):
     price = forms.DecimalField(max_digits=10, decimal_places=2)
     description = forms.CharField(widget=forms.Textarea)
 
-Мы можем использовать ModelForm, 
+Мы можем использовать ModelForm, и Django сам создаст все поля из модели
+
+2. Автоматическое создание полей 
