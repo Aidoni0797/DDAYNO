@@ -12,4 +12,48 @@ Formset - это специальный класс Django, который упр
 
 Используется, когда нужно работать сразу с несколькими объектами одного типа (товары, адреса, комментарии и т.д.)
 
-2. Основные атрибуты 
+2. Основные атрибуты Formset
+
+Когда мы создаём Formset через formset_factory, у объекта появляются важные атрибуты:
+formset.forms - список всех форм внутри Formset.
+dormset.total_form_count() - общее количество форм
+formset.initial_form_count() - количество форм, которые уже содержат данные
+formset.managment_form - скрытая форма, которая содердит служебные поля (TOTAL_FORMS, INITIAL_FORMS, MAX_NUM_FORMS).
+Без неё Formset не будет работать
+formset.is_valid() - проверка всех форм сразу
+formset.errors - список ошибок по всем формам
+
+3. Создание Formset через formset_factory
+
+Примеры формы:
+
+from django import forms
+
+class ProductForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    price = forms.DecimalField(max_digits=10, decimal_places=2)
+
+Создание Formset:
+from django.forms import formset_factory
+
+ProductFormSet = formset_factory(ProductForm, extra=3, max_num=5, validate_max=True)
+
+
+Параметры:
+extra=3 - количество пустых форм по умолчанию
+max_num = 5 - максимальное количество форм
+min_num = 1 - минимальное количество форм
+validate_max = True - включить проверку на превышение max_num
+validate_min = True - включить проверку на минимум
+
+4. Методы Formset
+is_valid() - проверяет корректность всех форм
+cleaned_data - список словарей с очищенными данными всех форм
+save() (только для ModelFormset) - сохраняет все формы в базу
+add_fields(forms, index) - можно добавить дополнительные поля в каждую форму Formset-a
+
+5. ModelFormset
+
+ModelFormset работает по тому же принципу, но автоматически привязывается к модели
+
+Создаётся через modelformset_factory:
